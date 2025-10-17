@@ -1,0 +1,1778 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz Master - Random 10 of 144</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --accent: #4f46e5;
+      --accent-light: #6366f1;
+      --accent-dark: #4338ca;
+      --green: #10b981;
+      --green-light: #34d399;
+      --red: #ef4444;
+      --red-light: #f87171;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+      --radius: 16px;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      margin: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--green), var(--accent-light));
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 0;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .score-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .score-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .progress-container {
+      margin-bottom: 24px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .question {
+      margin: 24px 0;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .question-number {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .question-text {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .opts {
+      display: grid;
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .opt {
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      transition: var(--transition);
+      background: white;
+    }
+
+    .opt:hover {
+      border-color: var(--accent-light);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .opt.selected {
+      border-color: var(--accent);
+      background: rgba(79, 70, 229, 0.05);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+    }
+
+    .opt.correct {
+      border-color: var(--green);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .opt.wrong {
+      border-color: var(--red);
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .opt.disabled {
+      cursor: default;
+      opacity: 0.9;
+    }
+
+    .opt.disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .opt-label {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--text-light);
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .opt.selected .opt-label {
+      background: var(--accent);
+      color: white;
+    }
+
+    .opt.correct .opt-label {
+      background: var(--green);
+      color: white;
+    }
+
+    .opt.wrong .opt-label {
+      background: var(--red);
+      color: white;
+    }
+
+    .opt-text {
+      flex: 1;
+      padding-top: 4px;
+    }
+
+    .btn-container {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn.primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-light);
+    }
+
+    .btn.ghost:hover {
+      background: #f8fafc;
+      border-color: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text-light);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .result-container {
+      margin-top: 24px;
+      padding: 24px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .result-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .result-score {
+      font-size: 48px;
+      font-weight: 800;
+      text-align: center;
+      margin: 20px 0;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .review-section {
+      margin-top: 24px;
+    }
+
+    .question-review {
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+      background: white;
+    }
+
+    .question-review.correct {
+      border-left: 4px solid var(--green);
+    }
+
+    .question-review.incorrect {
+      border-left: 4px solid var(--red);
+    }
+
+    .review-question {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .review-answer {
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .review-answer.correct {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--green);
+    }
+
+    .review-answer.incorrect {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--red);
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid #cbd5e1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .checkbox.checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .checkbox.checked::after {
+      content: '✓';
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .checkbox-input {
+      display: none;
+    }
+
+    .timer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 16px;
+    }
+
+    .timer-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        padding: 24px 20px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .score-container {
+        align-self: flex-end;
+      }
+      
+      .btn-container {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      footer {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="app">
+    <header>
+      <h1>Quiz Master</h1>
+      <div class="score-container">
+        <div class="score-circle" id="score">0</div>
+        <div class="meta">/ 10</div>
+      </div>
+    </header>
+
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 10%"></div>
+      </div>
+    </div>
+
+    <main>
+      <div id="questionArea">
+        <!-- Question content injected here -->
+      </div>
+
+      <div class="btn-container">
+        <button class="btn primary" id="submitBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Submit Answer
+        </button>
+        <button class="btn ghost" id="nextBtn" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+          Next Question
+        </button>
+        <button class="btn ghost" id="restartBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          New Quiz
+        </button>
+      </div>
+
+      <div id="finalArea" style="display:none"></div>
+    </main>
+
+    <footer>
+      <div>10 random questions from your question bank each run</div>
+      <div>Immediate feedback with visual indicators</div>
+    </footer>
+  </div>
+
+  <script>
+  // --- QUESTIONS: Replace or extend to 144 items. Example set uses the 12 provided; add more as needed. ---
+  const QUESTIONS = [
+     {
+    "q": "Which of the following best demonstrates the principle of distributional semantics?",
+    "opts": [
+      "Words that co-occur frequently tend to share semantic properties.",
+      "Each word has a unique, fixed meaning regardless of context.",
+      "Syntax determines the entire meaning of a sentence.",
+      "Distributional semantics is unrelated to word embeddings."
+    ],
+    "answer": [0],
+    "multiple": false
+  },
+  {
+    "q": "Which of the following words is least likely to be polysemous?",
+    "opts": ["Bank", "Tree", "Gravity", "Idea"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "Consider the following sentence pair:\nSentence 1: Riya dropped the glass.\nSentence 2: The glass broke.\nDoes Sentence 1 entail Sentence 2?",
+    "opts": ["Yes", "No"],
+    "answer": [1],
+    "multiple": false
+  },
+  {
+    "q": "Which sentence contains a homonym?",
+    "opts": [
+      "He wound the clock before bed.",
+      "She tied her hair in a bun.",
+      "I can’t bear the noise.",
+      "He likes to bat after lunch."
+    ],
+    "answer": [3],
+    "multiple": false
+  },
+  {
+    "q": "Which of the following relationships are incorrectly labeled?",
+    "opts": [
+      "Car is a meronym of wheel.",
+      "Rose is a hyponym of flower.",
+      "Keyboard is a holonym of key.",
+      "Tree is a hypernym of oak."
+    ],
+    "answer": [0],
+    "multiple": false
+  },
+  {
+    "q": "_________ studies how context influences the interpretation of meaning.",
+    "opts": ["Syntax", "Morphology", "Pragmatics", "Semantics"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "In the sentence, “After Sita praised Radha, she smiled happily,” who does “she” most likely refer to?",
+    "opts": ["Sita", "Radha", "Ambiguous", "Neither"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "Which of the following statements is true?\n(i) Word embeddings capture semantic similarity through context.\n(ii) Morphological analysis is irrelevant in LLMs.\n(iii) Hypernyms are more specific than hyponyms.",
+    "opts": ["Only (i)", "Only (i) and (iii)", "Only (ii) and (iii)", "All of the above"],
+    "answer": [0],
+    "multiple": false
+  },
+  {
+    "q": "What issues can be observed in the following text?\nOn a much-needed #workcation in beautiful Goa. Workin & chillin by d waves!",
+    "opts": ["Idioms", "Non-standard English", "Tricky Entity Names", "Neologisms"],
+    "answer": [1, 3],
+    "multiple": true
+  },
+  {
+    "q": "In semantic role labelling, we determine the semantic role of each argument with respect to the ___________ of the sentence.",
+    "opts": ["noun phrase", "subject", "predicate", "adjunct"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "Which of the following does not directly affect perplexity?",
+    "opts": ["Vocabulary size", "Sentence probability", "Number of tokens", "Sentence length"],
+    "answer": [0],
+    "multiple": false
+  },
+  {
+    "q": "Which equation expresses the chain rule for a 4-word sentence?",
+    "opts": [
+      "P(w1, w2, w3, w4) = P(w1) + P(w2|w1) + P(w3|w2) + P(w4|w3)",
+      "P(w1, w2, w3, w4) = P(w1) × P(w2|w1) × P(w3|w1, w2) × P(w4|w1, w2, w3)",
+      "P(w1, w2, w3, w4) = P(w1) × P(w2|w1) × P(w3|w2) × P(w4|w3)",
+      "P(w1, w2, w3, w4) = P(w4|w3) × P(w3|w2) × P(w2|w1) × P(w1)"
+    ],
+    "answer": [1],
+    "multiple": false
+  },
+  {
+    "q": "Which assumption allows n-gram models to reduce computation?",
+    "opts": ["Bayes Assumption", "Chain Rule", "Independence Assumption", "Markov Assumption"],
+    "answer": [3],
+    "multiple": false
+  },
+  {
+    "q": "In a trigram language model, which of the following is a correct example of linear interpolation?",
+    "opts": [
+      "P(wi∣wi−2,wi−1)=λ1P(wi∣wi−2,wi−1)",
+      "P(wi∣wi−2,wi−1)=λ1P(wi∣wi−2,wi−1)+λ2P(wi∣wi−1)+λ3P(wi)",
+      "P(wi∣wi−2,wi−1)=max(P(wi∣wi−2,wi−1),P(wi∣wi−1))",
+      "P(wi∣wi−2,wi−1)=P(wi)P(wi−1)/P(wi−2)"
+    ],
+    "answer": [1],
+    "multiple": false
+  },
+  {
+    "q": "A trigram model is equivalent to which order Markov model?",
+    "opts": ["3", "2", "1", "4"],
+    "answer": [1],
+    "multiple": false
+  },
+  {
+    "q": "Which smoothing technique leverages the number of unique contexts a word appears in?",
+    "opts": ["Good-Turing", "Add-k", "Kneser-Ney", "Absolute Discounting"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "Assuming a bi-gram language model, calculate the probability of the sentence:\n<s>birds fly in the blue sky</s>\nIgnore the unigram probability of P(<s>) in your calculation.",
+    "opts": ["2/37", "1/27", "0", "1/36"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "Assuming a bi-gram language model, calculate the perplexity of the sentence:\n<s>birds fly in the blue sky</s>\nPlease do not consider <s>and </s> as words of the sentence.",
+    "opts": ["271/4", "271/5", "91/6", "None of these"],
+    "answer": [3],
+    "multiple": false
+  },
+  {
+    "q": "In backpropagation, which method is used to compute the gradients?",
+    "opts": ["Gradient descent", "Chain rule of derivatives", "Matrix factorization", "Linear regression"],
+    "answer": [1],
+    "multiple": false
+  },
+  {
+    "q": "Which of the following functions is not differentiable at zero?",
+    "opts": ["Sigmoid", "Tanh", "ReLU", "Linear"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "In the context of regularization, which of the following statements is true?",
+    "opts": [
+      "L2 regularization tends to produce sparse weights",
+      "Dropout is applied during inference to improve accuracy",
+      "L1 regularization adds the squared weight penalties to the loss function",
+      "Dropout prevents overfitting by randomly disabling neurons during training"
+    ],
+    "answer": [3],
+    "multiple": false
+  },
+  {
+    "q": "Which activation function is least likely to suffer from vanishing gradients?",
+    "opts": ["Tanh", "Sigmoid", "ReLU"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "Which of the following equations correctly represents the derivative of the sigmoid function?",
+    "opts": ["σ(x) · (1 + σ(x))", "σ(x)²", "σ(x) · (1 − σ(x))", "1 / (1 + e^x)"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "What condition must be met for the Perceptron learning algorithm to converge?",
+    "opts": ["Learning rate must be zero", "Data must be non-linearly separable", "Data must be linearly separable", "Activation function must be sigmoid"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "Which of the following logic functions requires a network with at least one hidden layer to model?",
+    "opts": ["AND", "OR", "NOT", "XOR"],
+    "answer": [3],
+    "multiple": false
+  },
+  {
+    "q": "Why is it necessary to include non-linear activation functions between layers in an MLP?",
+    "opts": [
+      "Without them, the network is just a linear function",
+      "They prevent overfitting",
+      "They allow backpropagation to work"
+    ],
+    "answer": [0],
+    "multiple": false
+  },
+  {
+    "q": "What is typically the output activation function for an MLP solving a binary classification task?",
+    "opts": ["Tanh", "ReLU", "Sigmoid", "Softmax"],
+    "answer": [2],
+    "multiple": false
+  },
+  {
+    "q": "Which type of regularization encourages sparsity in the weights?",
+    "opts": ["L1 regularization", "L2 regularization", "Dropout", "Early stopping"],
+    "answer": [0],
+    "multiple": false
+  },
+      {
+    q: "A one-hot vector representation captures semantic similarity between related words like 'king' and 'queen'.",
+    opts: ["True", "False"],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Which method is used to reduce the dimensionality of a term-context matrix in count-based word representations?",
+    opts: ["Principal Component Analysis", "Matrix Inversion", "Singular Value Decomposition (SVD)", "Latent Dirichlet Allocation"],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Which property makes tf-idf a better representation than raw term frequency?",
+    opts: ["It is non-linear", "It accounts for the informativeness of words", "It penalizes longer documents", "It uses hierarchical clustering"],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "What is the purpose of using negative sampling in Word2Vec training?",
+    opts: ["To reduce dimensionality of word vectors", "To ensure gradient convergence", "To balance class distribution in classification", "To simplify softmax computation"],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "In skip-gram Word2Vec, the model:",
+    opts: ["Predicts a word given its context", "Predicts the next sentence", "Predicts surrounding context words given a target word", "Learns n-gram frequencies"],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Why does SVD-based word embedding struggle with adding new words to the vocabulary?",
+    opts: ["It uses online learning", "It lacks semantic interpretability", "It assumes word order", "It is computationally expensive to retrain"],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "Which of the following best describes the term 'distributional hypothesis' in NLP?",
+    opts: ["Words with high frequency have greater meaning", "Words are defined by their part-of-speech tags", "A word’s meaning is characterized by the words around it", "Words should be normalized before vectorization"],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "In Word2Vec, similarity between word vectors is computed using Euclidean distance.",
+    opts: ["True", "False"],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Which method solves the problem of OOV (Out-Of-Vocabulary) words better?",
+    opts: ["One-hot encoding", "CBOW", "Skip-gram with subsampling", "FastText embedding"],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "If the word 'economy' occurs 4 times in a corpus, and 'growth' appears in a window of 5 words around it 3 times, what is the entry for (economy, growth) in a term-context matrix?",
+    opts: ["1", "2", "3", "4"],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Which of the following best explains the vanishing gradient problem in RNNs?",
+    opts: ["RNNs lack memory mechanisms for long-term dependencies.", "Gradients grow too large during backpropagation.", "Gradients shrink exponentially over long sequences.", "RNNs cannot process variable-length sequences."],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "In an attention mechanism, what does the softmax function ensure?",
+    opts: ["Normalization of decoder outputs", "Stability of gradients during backpropagation", "Values lie between -1 and 1", "Attention weights sum to 1"],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "Which of the following is true about the difference between a standard RNN and an LSTM?",
+    opts: ["LSTM does not use any non-linear activation.", "LSTM has a gating mechanism to control information flow.", "RNNs have fewer parameters than LSTMs because they use convolution.", "LSTMs cannot learn long-term dependencies."],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Which gate in an LSTM is responsible for deciding how much of the cell state to keep?",
+    opts: ["Forget gate", "Input gate", "Output gate", "Cell candidate gate"],
+    answer: [0],
+    multiple: false
+  },
+  {
+    q: "What improvement does attention bring to the basic Seq2Seq model?",
+    opts: ["Reduces training time", "Removes the need for an encoder", "Allows access to all encoder states during decoding", "Reduces the number of model parameters"],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Which of the following is a correct statement about the encoder-decoder architecture?",
+    opts: ["The encoder generates tokens one at a time.", "The decoder summarizes the input sequence.", "The decoder generates outputs based on encoder representations and its own prior outputs.", "The encoder stores only the first token of the sequence."],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "What is self-attention in Transformers used for?",
+    opts: ["To enable sequential computation", "To attend to the previous layer’s output", "To relate different positions in the same sequence", "To enforce fixed-length output"],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Why are RNNs preferred over fixed-window neural models?",
+    opts: ["They have a smaller parameter size.", "They can process sequences of arbitrary length.", "They eliminate the need for embedding layers.", "None of the above."],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Given the following encoder and decoder hidden states, compute the attention scores. Encoder hidden states: h1=[7,3], h2=[0,2], h3=[1,4] Decoder hidden state: s=[0.2,1.5]",
+    opts: ["0.42, 0.02, 0.56", "0.15, 0.53, 0.32", "0.64, 0.18, 0.18", "0.08, 0.91, 0.01"],
+    answer: [0],
+    multiple: false
+  },
+  {
+    q: "RoPE uses additive embeddings like sinusoidal encoding.",
+    opts: ["True", "False"],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Which of the following is true about multi-head attention?",
+    opts: ["It increases model interpretability by using a single set of attention weights", "Each head operates on different parts of the input in parallel", "It reduces the number of parameters in the model", "Heads are averaged before applying the softmax function"],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "What is the role of the residual connection in the Transformer architecture?",
+    opts: ["Improve gradient flow during backpropagation", "Normalize input embeddings", "Reduce computational complexity", "Prevent overfitting"],
+    answer: [0],
+    multiple: false
+  },
+  {
+    q: "The feedforward network in a Transformer block introduces non-linearity between attention layers.",
+    opts: ["True", "False"],
+    answer: [0],
+    multiple: false
+  },
+  {
+    q: "The sinusoidal positional encoding uses sine for even dimensions and ___ for odd dimensions.",
+    opts: ["sine", "cosine", "tangent", "None of these"],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Why is positional encoding added to input embeddings in Transformers?",
+    opts: ["To provide unique values for each word", "To indicate the position of tokens since Transformers are non-sequential", "To scale embeddings", "To avoid vanishing gradients"],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "You are given a self-attention layer with input dimension 512, using 8 heads. What is the output dimension per head?",
+    opts: ["64", "128", "32", "256"],
+    answer: [0],
+    multiple: false
+  },
+     {
+    q: "Why can a pre-trained BART model be fine-tuned directly for abstractive summarization?",
+    opts: [
+      "Its encoder alone is sufficient.",
+      "It shares vocabulary with summarization datasets.",
+      "It uses a larger context window than BERT.",
+      "It already contains a generative decoder trained jointly during pre-training."
+    ],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "For pre-training of encoder-decoder models, which statement(s) is/are true?",
+    opts: [
+      "The encoder attends bidirectionally to its whole input.",
+      "The decoder conditions on earlier decoder tokens and encoder outputs.",
+      "Unlabelled text is turned into a supervised task via a noising scheme.",
+      "Training relies on a next-sentence-prediction loss."
+    ],
+    answer: [0, 1, 2],
+    multiple: true
+  },
+  {
+    q: "Which attention mask(s) prevent(s) a token from looking at future positions?",
+    opts: [
+      "Causal mask",
+      "Fully-visible mask",
+      "Prefix-LM mask",
+      "All of the above",
+      "None of the above"
+    ],
+    answer: [0, 2],
+    multiple: true
+  },
+  {
+    q: "T5 experiments showed that clean and compact pre-training data can outperform a larger but noisier corpus primarily because:",
+    opts: [
+      "Larger corpora overfit.",
+      "Noise forces the model to waste capacity on modelling irrelevant patterns.",
+      "Clean data has longer documents.",
+      "Compact data allows bigger batches."
+    ],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "What makes sampling from an auto-regressive language model straightforward?",
+    opts: [
+      "The model is deterministic.",
+      "The vocabulary is small.",
+      "Each conditional distribution over the vocabulary is readily normalised and can be sampled token-by-token.",
+      "Beam search guarantees optimality."
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Why does ELMo build its input token representations from a character-level CNN instead of fixed word embeddings?",
+    opts: [
+      "To reduce training time by sharing parameters",
+      "To avoid UNK tokens and generate representations for any string",
+      "To compress embeddings to 128 dimensions",
+      "To ensure the same vector for a word in every context"
+    ],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "In standard instruction tuning with a decoder-only LM, which tokens typically contribute to the next-token prediction loss?",
+    opts: [
+      "Only the prompt tokens",
+      "Only the response tokens",
+      "Both prompt and response tokens",
+      "Neither, loss is computed at the sequence level only"
+    ],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Why can using multiple instruction templates for the same task help?",
+    opts: [
+      "It only increases the dataset size.",
+      "It regularizes the reward model.",
+      "It improves generalization by exposing the model to different phrasings of the instruction.",
+      "It ensures the same tokenization across tasks."
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "As the model size grows, what happens to prompt length and initialization sensitivity in prompt tuning?",
+    opts: [
+      "Both matter more.",
+      "Both matter less.",
+      "Length matters less but initialization matters more.",
+      "Initialization matters less but length matters more."
+    ],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Which of the following statement(s) is/are true about the POSIX metric for quantifying prompt sensitivity?",
+    opts: [
+      "POSIX is independent of the correctness of the generated responses and captures sensitivity as a property independent of correctness",
+      "POSIX is a length-normalized metric",
+      "POSIX compares the generated responses against the ground-truth to quantify prompt sensitivity",
+      "POSIX captures the variance in the log-likelihood of the same response for different input prompt variations"
+    ],
+    answer: [0, 1, 3],
+    multiple: true
+  },
+  {
+    q: "Which statement is true about prompt sensitivity as captured by POSIX?",
+    opts: [
+      "Larger models always have lower prompt sensitivity than smaller ones.",
+      "Larger models always have higher prompt sensitivity than smaller ones.",
+      "Prompt sensitivity decreases for models with a parameter count above a certain threshold.",
+      "Increasing parameter count does not necessarily reduce prompt sensitivity."
+    ],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "In training a reward model with pairwise preferences (x, y+, y-), the Bradley-Terry style objective encourages:",
+    opts: [
+      "Maximizing rθ(x,y−) − rθ(x,y+)",
+      "Minimizing the entropy of the policy",
+      "Maximizing logσ(rθ(x,y+) − rθ(x,y−))",
+      "Setting rθ(x,y) equal to the log-probability under πref"
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Which of the following are recommended while performing REINFORCE-style policy optimization?",
+    opts: [
+      "Use the log-derivative trick to obtain an unbiased gradient estimator.",
+      "Weight token-level log-probs by the advantage function to reduce variance.",
+      "Use importance weights and clip them when sampling from a fixed policy.",
+      "Avoid any clipping to preserve gradient magnitude."
+    ],
+    answer: [0, 1, 2],
+    multiple: true
+  },
+  {
+    q: "Which method combines reward maximization and minimizing KL divergence?",
+    opts: [
+      "REINFORCE",
+      "Monte Carlo Approximation",
+      "Proximal Policy Optimization",
+      "Constitutional AI"
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Which of the following is the reason for performing alignment beyond instruction tuning in LLMs?",
+    opts: [
+      "Instruction tuning guarantees safety on harmful queries.",
+      "Alignment can prevent outputs that a model might otherwise deem correct, but humans find unacceptable.",
+      "Alignment is only needed for small models.",
+      "Instruction tuning already optimizes a human preference model."
+    ],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Let πθ be the probability of choosing token at in state st assigned by the current policy being optimized, πk be that by the old/reference policy and ε > 0 be the clip parameter. When the token-level advantage At is positive, PPO-CLIP maximizes which of the following expression at step t?",
+    opts: [
+      "max(πθ/πk, 1 - ε)At",
+      "max(πk/πθ, 1-ε)At",
+      "min(πk/πθ, 1+ε)At",
+      "min(πθ/πk, 1+ε)At"
+    ],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "In the knowledge-graph training pipeline that models P(o | s, r) with a softmax over all entities, what practical difficulty motivates the use of negative sampling?",
+    opts: [
+      "The softmax is undefined for KG scores.",
+      "The denominator sums over all entities, which is computationally expensive.",
+      "The numerator requires the full adjacency list for each relation.",
+      "The scores must be normalized per relation rather than globally."
+    ],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Which statements correctly characterize the local closed-world assumption in KG training with negative sampling?",
+    opts: [
+      "Any unobserved triple is treated as false for training purposes.",
+      "It is strictly correct because KGs are exhaustive.",
+      "It helps training but may mislabel genuinely missing positives as negatives.",
+      "It eliminates the need for development/test splits."
+    ],
+    answer: [0, 2],
+    multiple: true
+  },
+  {
+    q: "For discriminative training, why is it infeasible to enforce all constraints f(s, r, o) ≥ m + f(s′,r,o′) over every possible negative triple?",
+    opts: [
+      "The number of possible facts is O(E²R), overwhelmingly larger than positives.",
+      "Because scores cannot be compared across relations.",
+      "Because margins must be tuned per entity.",
+      "Because negatives are always ambiguous."
+    ],
+    answer: [0],
+    multiple: false
+  },
+  {
+    q: "Which statement best describes score polarity in KG models?",
+    opts: [
+      "Scores must always be larger for false triples.",
+      "Score polarity is fixed by the dataset.",
+      "Some models use higher scores for more plausible triples, others use lower, and probabilities/losses can be adapted accordingly.",
+      "Polarity only matters for RotatE."
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Compared to semantic interpretation (logical-form execution), a differentiable KGQA system:",
+    opts: [
+      "Requires a hand-coded logical form for every question.",
+      "Cannot be trained end-to-end.",
+      "Provides complete interpretability of reasoning steps.",
+      "Learns dense question and graph embeddings and uses cross-attention to align them."
+    ],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "Which statements correctly describe filtered evaluation?",
+    opts: [
+      "It removes candidates that are true facts in train/dev from the ranked list before scoring the test query.",
+      "It increases fairness by not penalizing the model for ranking another correct answer that happened to be in training data.",
+      "It always decreases MRR.",
+      "It affects measures like MRR and MAP."
+    ],
+    answer: [0, 1, 3],
+    multiple: true
+  },
+  {
+    q: "Which of the following best captures the motivation for KG completion?",
+    opts: [
+      "KGs are complete, KG completion mainly compresses them.",
+      "Manual curation keeps KGs fully up-to-date.",
+      "KGs are useful but incomplete, so we learn embeddings and a scoring function to infer missing facts.",
+      "KG completion is only for alignment across languages."
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Consider pairwise hinge/ReLU loss for discriminative training with margin m: max{0, m + f(s’k, r, o’k) − f(s, r, o)}. When does this loss become exactly zero for a given negative (s’k, r, o’k)?",
+    opts: [
+      "When f(s, r, o) ≥ m + f(s’k, r, o’k)",
+      "When f(s, r, o) = f(s’k, r, o’k)",
+      "When f(s’k, r, o’k) ≥ m + f(s, r, o)",
+      "Only when m = 0"
+    ],
+    answer: [0],
+    multiple: false
+  },
+  {
+    q: "Uniform negative sampling can introduce an extra bias unless you do which of the following when forming the sampled denominator?",
+    opts: [
+      "Exclude the true object o from the denominator.",
+      "Normalize scores per relation type.",
+      "Sample only from entities not connected to s.",
+      "Always include the true object o in the denominator."
+    ],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "Which of the following is the RotatE scoring function?",
+    opts: [
+      "f(s, r, o) = ‖s+r−o‖²",
+      "f(s, r, o) = ‖s⊙r−o‖², where r lies on the unit circle element-wise",
+      "f(s, r, o) = sᵀRᵣo with Rᵣ orthonormal",
+      "f(s, r, o) = −⟨s, r, o⟩"
+    ],
+    answer: [1],
+    multiple: false
+  },
+      {
+    q: "How do Prefix Tuning and Adapters differ in terms of where they inject new task-specific parameters in the Transformer architecture?",
+    opts: [
+      "Prefix Tuning adds new feed-forward networks after every attention block, while Adapters prepend tokens.",
+      "Both approaches modify only the final output layer but in different ways.",
+      "Prefix Tuning learns trainable “prefix” hidden states at each layer’s input, whereas Adapters insert small bottleneck modules inside the Transformer blocks.",
+      "Both approaches rely entirely on attention masks to inject new task-specific knowledge."
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "The Structure-Aware Intrinsic Dimension (SAID) improves over earlier low-rank adaptation approaches by:",
+    opts: [
+      "Ignoring the network structure entirely",
+      "Learning one scalar per layer for layer-wise scaling",
+      "Sharing the same random matrix across all layers",
+      "Using adapters within self-attention layers"
+    ],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Which of the following are correct about the extensions of LoRA?",
+    opts: [
+      "LongLoRA supports inference on longer sequences using global attention",
+      "QLoRA supports low-rank adaptation on 4-bit quantized models",
+      "DyLoRA automatically selects the optimal rank during training",
+      "LoRA+ introduces gradient clipping to stabilize training"
+    ],
+    answer: [1, 2],
+    multiple: true
+  },
+  {
+    q: "Which pruning technique specifically removes weights with the smallest absolute values first, potentially followed by retraining to recover accuracy?",
+    opts: ["Magnitude Pruning", "Structured Pruning", "Random Pruning", "Knowledge Distillation"],
+    answer: [0],
+    multiple: false
+  },
+  {
+    q: "In Post-Training Quantization (PTQ) for LLMs, why is a calibration dataset used?",
+    opts: [
+      "To precompute the entire attention matrix for all tokens.",
+      "To remove outlier dimensions before applying magnitude-based pruning.",
+      "To fine-tune the entire model on a small dataset and store the new weights.",
+      "To estimate scale factors for quantizing weights and activations under representative data conditions."
+    ],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "Which best summarizes the function of the unembedding matrix WU?",
+    opts: [
+      "It merges the queries and keys for each token before final classification.",
+      "It converts the final residual vector into vocabulary logits for next-token prediction.",
+      "It is used for normalizing the QK and OV circuits so that their norms match.",
+      "It acts as a second attention layer that aggregates multiple heads."
+    ],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Which definition best matches an induction head as discovered in certain Transformer circuits?",
+    opts: [
+      "A head that specifically attends to punctuation tokens to determine sentence boundaries",
+      "A feed-forward sub-layer specialized for outputting next-token probabilities for out-of-distribution tokens",
+      "A head that looks for previous occurrences of a token A, retrieves the token B that followed it last time, and then predicts B again",
+      "A masking head that prevents the model from looking ahead at future tokens"
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "In mechanistic interpretability, how can we define ‘circuit’?",
+    opts: [
+      "A data pipeline for collecting training examples in an autoregressive model",
+      "A small LSTM module inserted into a Transformer for additional memory",
+      "A device external to the neural network used to fine-tune certain parameters after training",
+      "A subgraph of the neural network hypothesized to implement a specific function or behaviour"
+    ],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "Which best describes the role of Double Quantization in QLoRA?",
+    opts: [
+      "It quantizes the attention weights twice to achieve 1-bit representations.",
+      "It reinitializes parts of the model with random bit patterns for improved regularization.",
+      "It quantizes the quantization constants themselves for additional memory savings.",
+      "It systematically reverts partial quantized weights back to FP16 whenever performance degrades."
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Which of the following are true about sequence-level distillation for LLMs?",
+    opts: [
+      "It trains a student model by matching the teacher’s sequence outputs rather than just individual token distributions.",
+      "It requires storing only the top-1 predictions from the teacher model for each token.",
+      "It can be combined with word-level distillation to transfer both local and global knowledge.",
+      "It forces the teacher to produce a chain-of-thought explanation for each example."
+    ],
+    answer: [0, 2],
+    multiple: true
+  },
+  {
+    q: "Assume that you build a document–term matrix M and take its thin SVD M = U Σ Vᵀ. Which statement is most accurate for interpreting V in classical Latent Semantic Analysis (LSA)?",
+    opts: [
+      "Columns of V give low-dimensional word representations that capture co-occurrence similarity.",
+      "V gives only document embeddings, words are in U.",
+      "V and U are not orthonormal in LSA.",
+      "Σ can be ignored without affecting similarity."
+    ],
+    answer: [0],
+    multiple: false
+  },
+  {
+    q: "Which statements correctly characterize the basic DistMult approach for knowledge graph completion?",
+    opts: [
+      "Each relation is parameterized by a full D×D matrix that can capture asymmetric relations.",
+      "The relation embedding is a diagonal matrix, leading to a multiplicative interaction of entity embeddings.",
+      "DistMult struggles with non-symmetric relations because score(s, r, o) = asᵀMr ao is inherently symmetric.",
+      "DistMult’s performance is typically tested only on fully symmetric KGs."
+    ],
+    answer: [1, 2],
+    multiple: true
+  },
+  {
+    q: "Given a doc–term matrix M, what do MᵀM and MMᵀ capture?",
+    opts: [
+      "MᵀM: word–word co-occurrence similarity across documents; MMᵀ: document–document similarity via shared terms.",
+      "Both are identity matrices by construction.",
+      "MᵀM counts how often a word appears in the corpus total.",
+      "None of the above."
+    ],
+    answer: [0],
+    multiple: false
+  },
+  {
+    q: "Which best describes the main advantage of using a factorized representation (e.g., DistMult, ComplEx) for large KGs?",
+    opts: [
+      "It enforces that every relation be perfectly symmetric.",
+      "It ensures each entity is stored as a one-hot vector.",
+      "It collapses the entire KG into a single scalar value.",
+      "It reduces parameters and enables generalization to unseen triples by capturing low-rank structure."
+    ],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "SimplE addresses asymmetry by:",
+    opts: [
+      "Using separate subject and object embeddings per entity and including inverse relations, with an averaged score over directions.",
+      "Constraining relation vectors to unit modulus.",
+      "Replacing dot-products by max-pooling.",
+      "Removing inverse relations entirely."
+    ],
+    answer: [0],
+    multiple: false
+  },
+  {
+    q: "Which of the following statements correctly describe hyperbolic (Poincare) embeddings for hierarchical data?",
+    opts: [
+      "They map nodes onto a disk such that large branching factors are represented with lower distortion.",
+      "Distance grows slowly near the center and becomes infinite near the boundary.",
+      "They require each node to be embedded on the surface of the Poincare disk of radius 1.",
+      "They achieve low distortion embeddings for trees with the same dimension as Euclidean space."
+    ],
+    answer: [0, 1],
+    multiple: true
+  },
+  {
+    q: "Why might a partial-order-based approach (like order embeddings) be beneficial for modelling ‘is-a’ relationships compared to purely distance-based approaches?",
+    opts: [
+      "They explicitly encode ancestor–descendant relation as coordinate-wise inequality.",
+      "They represent negative correlations more easily than distance metrics.",
+      "They guarantee transitive closure in the learned embedding space.",
+      "They use coordinate-wise ordering or interval containment instead of pairwise distances."
+    ],
+    answer: [0, 3],
+    multiple: true
+  },
+  {
+    q: "Which statement about box embeddings in hierarchical modelling is most accurate?",
+    opts: [
+      "Each entity or type is assigned a single real-valued vector, ignoring bounding volumes.",
+      "Containment Ix ⊆ Iy across dimensions encodes x≺y.",
+      "They rely on spherical distances to measure tree depth.",
+      "They cannot represent set intersections or overlap."
+    ],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Which statements correctly characterize “bias” in the context of LLMs?",
+    opts: [
+      "Bias can generate objectionable or stereotypical views in model outputs.",
+      "Bias is always intentionally introduced by malicious data curators.",
+      "Bias can cause harmful real-world impacts such as reinforcing discrimination.",
+      "Bias only affects low-resource languages; high-resource languages are unaffected."
+    ],
+    answer: [0, 2],
+    multiple: true
+  },
+  {
+    q: "The Stereotype Score (ss) refers to:",
+    opts: [
+      "The frequency with which a language model rejects biased associations.",
+      "The proportion of examples where a model chooses a stereotypical association over an anti-stereotypical one.",
+      "A ratio of positive to negative sentiment in model outputs.",
+      "The measure of meaningless model predictions."
+    ],
+    answer: [1],
+    multiple: false
+  },
+     {
+    q: "Which of the following are prominent sources of bias in LLMs?",
+    opts: [
+      "1 and 2 only",
+      "2 and 3 only",
+      "1, 2, and 4",
+      "1, 3, and 4"
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "In the context of bias mitigation based on adversarial triggers, which best describes the goal of prepending specially chosen tokens to prompts?",
+    opts: [
+      "To directly fine-tune the model parameters to remove bias",
+      "To override all prior knowledge in a model, effectively 'resetting' it",
+      "To exploit the model’s distributional patterns, thereby neutralizing or flipping biased associations in generated text",
+      "To randomly shuffle the tokens so that the model becomes more robust"
+    ],
+    answer: [2],
+    multiple: false
+  },
+  {
+    q: "Which of the following best describes the 'regard' metric?",
+    opts: [
+      "It is a measure of how well a model can explain its internal decision process.",
+      "It is a measurement of a model’s perplexity on demographically sensitive text.",
+      "It is the proportion of times a model self-corrects discriminatory language.",
+      "It is a classification label reflecting the attitude towards a demographic group in the generated text."
+    ],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "Which of the following steps compose the approach for improving response safety via in-context learning?",
+    opts: [
+      "Retrieving safety demonstrations similar to the user query.",
+      "Fine-tuning the model with additional labeled data after generation.",
+      "Providing retrieved demonstrations as examples in the prompt to guide the model’s response generation.",
+      "Sampling multiple outputs from LLMs and choosing the majority opinion."
+    ],
+    answer: [0, 2],
+    multiple: true
+  },
+  {
+    q: "Which statement(s) is/are correct about how high-resource (HRL) vs. low-resource languages (LRL) affect model training?",
+    opts: [
+      "LRLs typically have higher performance metrics due to smaller population sizes.",
+      "HRLs get more data, so the model might overfit to HRL cultural perspectives.",
+      "LRLs are often under-represented, leading to potential underestimation of their cultural nuances.",
+      "The dominance of HRLs can cause a reinforcing cycle that perpetuates imbalance."
+    ],
+    answer: [1, 2, 3],
+    multiple: true
+  },
+  {
+    q: "The 'Responsible LLM' concept is stated to address:",
+    opts: [
+      "Only the bias in LLMs",
+      "A set of concerns including explainability, fairness, robustness, and security",
+      "Balancing training costs with carbon footprint",
+      "Implementation of purely rule-based safety filters"
+    ],
+    answer: [1],
+    multiple: false
+  },
+  {
+    q: "Within the StereoSet framework, the icat metric specifically refers to:",
+    opts: [
+      "The ratio of anti-stereotypical associations to neutral associations",
+      "The percentage of times a model refuses to generate content deemed hateful",
+      "A measure of domain coverage across different demographic groups",
+      "A balanced metric capturing both a model’s language modelling ability and the tendency to avoid stereotypical bias"
+    ],
+    answer: [3],
+    multiple: false
+  },
+  {
+    q: "Bias due to improper selection of training data typically arises in LLMs when:",
+    opts: [
+      "Data are selected exclusively from curated, balanced sources with equal representation",
+      "The language model sees only real-time social media feeds without any historical texts",
+      "The training corpus over-represents some topics or groups, creating a skewed distribution",
+      "All data are automatically filtered to remove any demographic markers"
+    ],
+    answer: [2],
+    multiple: false
+  }
+];
+  // --- Core logic ---
+  const TOTAL_PICK = 10;
+  let bank = QUESTIONS.slice();
+  // If user has fewer than TOTAL_PICK, use everything
+  function pickRandomN(arr, n){
+    const copy = arr.slice();
+    const picked = [];
+    while(picked.length < n && copy.length){
+      const i = Math.floor(Math.random()*copy.length);
+      picked.push(copy.splice(i,1)[0]);
+    }
+    return picked;
+  }
+
+  let quiz = pickRandomN(bank, Math.min(TOTAL_PICK, bank.length));
+  let idx = 0;
+  let score = 0;
+  const userAnswers = [];
+
+  const qArea = document.getElementById('questionArea');
+  const submitBtn = document.getElementById('submitBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const restartBtn = document.getElementById('restartBtn');
+  const scoreEl = document.getElementById('score');
+  const finalArea = document.getElementById('finalArea');
+  const progressFill = document.getElementById('progressFill');
+
+  function updateProgress() {
+    const progress = ((idx + 1) / quiz.length) * 100;
+    progressFill.style.width = `${progress}%`;
+  }
+
+  function renderQuestion(){
+    const q = quiz[idx];
+    qArea.innerHTML = '';
+    finalArea.style.display='none';
+    const container = document.createElement('div');
+    
+    const meta = document.createElement('div');
+    meta.className='question-number';
+    meta.textContent = `Question ${idx+1} of ${quiz.length}`;
+    
+    const h = document.createElement('h2');
+    h.className = 'question-text';
+    h.textContent = q.q;
+    
+    const qbox = document.createElement('div');
+    qbox.className='question';
+    qbox.appendChild(meta);
+    qbox.appendChild(h);
+
+    const opts = document.createElement('div');
+    opts.className='opts';
+
+    q.opts.forEach((opt,i)=>{
+      const el = document.createElement('div');
+      el.className='opt';
+      el.setAttribute('data-i',i);
+
+      const label = document.createElement('div');
+      label.className = 'opt-label';
+      label.textContent = String.fromCharCode(65 + i);
+      
+      const text = document.createElement('div');
+      text.className = 'opt-text';
+      text.innerHTML = opt;
+
+      if(q.multiple){
+        const checkbox = document.createElement('div');
+        checkbox.className = 'checkbox';
+        checkbox.addEventListener('click', (e)=>{
+          if(el.classList.contains('disabled')) return;
+          checkbox.classList.toggle('checked');
+          el.classList.toggle('selected');
+        });
+        
+        el.appendChild(checkbox);
+        el.appendChild(text);
+      } else {
+        el.appendChild(label);
+        el.appendChild(text);
+        
+        el.addEventListener('click', ()=>{
+          if(el.classList.contains('disabled')) return;
+          // Clear previous selection
+          const siblings = opts.querySelectorAll('.opt');
+          siblings.forEach(s => {
+            s.classList.remove('selected');
+            const label = s.querySelector('.opt-label');
+            if (label) {
+              label.style.background = '#f1f5f9';
+              label.style.color = 'var(--text-light)';
+            }
+          });
+          
+          // Mark current selection
+          el.classList.add('selected');
+          label.style.background = 'var(--accent)';
+          label.style.color = 'white';
+          
+          // store selection
+          container.setAttribute('data-selected', i);
+        });
+      }
+
+      opts.appendChild(el);
+    });
+
+    qbox.appendChild(opts);
+    container.appendChild(qbox);
+    qArea.appendChild(container);
+
+    // Update progress bar
+    updateProgress();
+
+    // state buttons
+    submitBtn.disabled = false; 
+    nextBtn.disabled = true;
+  }
+
+  function handleSubmit(){
+    const q = quiz[idx];
+    const opts = qArea.querySelectorAll('.opt');
+    let selectedIndices = [];
+    
+    if(q.multiple){
+      opts.forEach((o, i)=>{
+        const checkbox = o.querySelector('.checkbox');
+        if(checkbox && checkbox.classList.contains('checked')) {
+          selectedIndices.push(i);
+        }
+      });
+    } else {
+      const sel = qArea.querySelector('.opt.selected');
+      if(sel){
+        selectedIndices = [Number(sel.getAttribute('data-i'))];
+      }
+    }
+
+    if(selectedIndices.length===0){
+      alert('Please select at least one option before submitting.');
+      return;
+    }
+
+    // disable further changes
+    opts.forEach(o=>o.classList.add('disabled'));
+    submitBtn.disabled = true; 
+    nextBtn.disabled = false;
+
+    // evaluate correctness
+    const correct = q.answer.slice().sort();
+    const given = selectedIndices.slice().sort();
+    const isCorrect = arraysEqual(correct,given);
+    if(isCorrect) score++;
+    scoreEl.textContent = score;
+
+    // visual feedback
+    opts.forEach((o,i)=>{
+      const label = o.querySelector('.opt-label');
+      if(q.answer.includes(i)){
+        o.classList.add('correct');
+        if (label) {
+          label.style.background = 'var(--green)';
+          label.style.color = 'white';
+        }
+      }
+      if(given.includes(i) && !q.answer.includes(i)){
+        o.classList.add('wrong');
+        if (label) {
+          label.style.background = 'var(--red)';
+          label.style.color = 'white';
+        }
+      }
+    });
+
+    userAnswers.push({q: q.q, opts: q.opts, correct: q.answer.slice(), given: given.slice(), multiple: q.multiple});
+
+    // if last question, change Next to show final
+    if(idx === quiz.length-1){
+      nextBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        Show Results
+      `;
+    } else {
+      nextBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+        Next Question
+      `;
+    }
+  }
+
+  function handleNext(){
+    if(idx < quiz.length-1){
+      idx++;
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult(){
+    qArea.innerHTML='';
+    submitBtn.disabled = true; 
+    nextBtn.disabled = true;
+    finalArea.style.display = 'block';
+    finalArea.innerHTML = '';
+    
+    const resultContainer = document.createElement('div');
+    resultContainer.className = 'result-container';
+    
+    const title = document.createElement('div');
+    title.className = 'result-title';
+    title.textContent = 'Quiz Complete!';
+    
+    const scoreDisplay = document.createElement('div');
+    scoreDisplay.className = 'result-score';
+    scoreDisplay.textContent = `${score} / ${quiz.length}`;
+    
+    const message = document.createElement('div');
+    message.style.textAlign = 'center';
+    message.style.marginBottom = '24px';
+    message.style.color = 'var(--text-light)';
+    
+    let performanceText = '';
+    let performanceColor = '';
+    
+    if (score >= 9) {
+      performanceText = 'Outstanding! You have excellent knowledge.';
+      performanceColor = 'var(--green)';
+    } else if (score >= 7) {
+      performanceText = 'Great job! You have a solid understanding.';
+      performanceColor = 'var(--accent)';
+    } else if (score >= 5) {
+      performanceText = 'Good effort! There is room for improvement.';
+      performanceColor = 'var(--accent-light)';
+    } else {
+      performanceText = 'Keep learning! Review the material and try again.';
+      performanceColor = 'var(--red)';
+    }
+    
+    message.innerHTML = `<strong style="color: ${performanceColor}">${performanceText}</strong>`;
+    
+    resultContainer.appendChild(title);
+    resultContainer.appendChild(scoreDisplay);
+    resultContainer.appendChild(message);
+    finalArea.appendChild(resultContainer);
+
+    const review = document.createElement('div');
+    review.className='review-section';
+    
+    const reviewTitle = document.createElement('h3');
+    reviewTitle.textContent = 'Review Your Answers';
+    reviewTitle.style.marginBottom = '16px';
+    reviewTitle.style.fontSize = '18px';
+    review.appendChild(reviewTitle);
+    
+    userAnswers.forEach((item, idx)=>{
+      const isCorrect = arraysEqual(item.correct, item.given);
+      
+      const box = document.createElement('div');
+      box.className = `question-review ${isCorrect ? 'correct' : 'incorrect'}`;
+      
+      const title = document.createElement('div');
+      title.className = 'review-question';
+      title.textContent = `Q${idx+1}. ${item.q}`;
+      box.appendChild(title);
+      
+      // Show correct answers
+      const correctAnswer = document.createElement('div');
+      correctAnswer.className = 'review-answer correct';
+      let correctText = 'Correct: ';
+      item.correct.forEach((c, i) => {
+        if (i > 0) correctText += ', ';
+        correctText += String.fromCharCode(65 + c);
+      });
+      correctAnswer.textContent = correctText;
+      box.appendChild(correctAnswer);
+      
+      // Show user's answers if incorrect
+      if (!isCorrect) {
+        const userAnswer = document.createElement('div');
+        userAnswer.className = 'review-answer incorrect';
+        let userText = 'Your answer: ';
+        item.given.forEach((g, i) => {
+          if (i > 0) userText += ', ';
+          userText += String.fromCharCode(65 + g);
+        });
+        userAnswer.textContent = userText;
+        box.appendChild(userAnswer);
+      }
+      
+      review.appendChild(box);
+    });
+    
+    finalArea.appendChild(review);
+
+    // allow restart
+    const restart = document.createElement('div');
+    restart.style.marginTop = '24px';
+    restart.style.textAlign = 'center';
+    
+    const rbtn = document.createElement('button');
+    rbtn.className = 'btn primary'; 
+    rbtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+        <path d="M3 3v5h5"></path>
+      </svg>
+      Start New Quiz
+    `;
+    rbtn.addEventListener('click', ()=>{ location.reload(); });
+    restart.appendChild(rbtn);
+    finalArea.appendChild(restart);
+  }
+
+  function arraysEqual(a,b){ 
+    if(a.length!==b.length) return false; 
+    for(let i=0;i<a.length;i++) if(a[i]!==b[i]) return false; 
+    return true; 
+  }
+
+  submitBtn.addEventListener('click', handleSubmit);
+  nextBtn.addEventListener('click', handleNext);
+  restartBtn.addEventListener('click', ()=>{ location.reload(); });
+
+  // initial render
+  renderQuestion();
+  </script>
+</body>
+</html>
